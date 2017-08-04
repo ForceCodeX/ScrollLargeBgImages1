@@ -39,15 +39,11 @@ class GameScene: SKScene {
   // The spritenodes (bg images) are stored in this array, this is used when we scroll the images
   var bgImagesArray = [SKSpriteNode]()
   
-  //var backgroundActions = [SKAction]()
-  
   // This is the scrolling speed of the bg images.
   var backgroundSpeed:CGFloat = -15.0
   
   // We use this in 'touchesBegan' to start scrolling the bg images
   var scrollAction: SKAction!
-  
-  //var touchScreen: Bool = false
   
   override init(size: CGSize) {
     super.init(size: size)
@@ -63,8 +59,8 @@ class GameScene: SKScene {
     setupBackgroundPieces(numberOfBgPieces: 8, bgArray: &bgImagesArray)
   }
 
+  // Make sprites of the bg images and position them correctly
   func setupBackgroundPieces(numberOfBgPieces: Int, bgArray: inout [SKSpriteNode]){
-    
     for x in 1...numberOfBgPieces {
       let bgImageName = "bgImage\(x)"
       let bg = SKSpriteNode(imageNamed: bgImageName)
