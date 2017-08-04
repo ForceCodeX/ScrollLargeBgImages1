@@ -112,7 +112,8 @@ class GameScene: SKScene {
     for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     // Start scrolling the background images when we tap screen.
     // Each time we tap screen, the scroll speed increases (I don't know if this
-    // is the best way to increase the scroll speed but that is not relevant in this case).
+    // is the best way to increase the scroll speed but that is not relevant in this case
+    // since the problem occurs after the first screen tap = start scrolling).
     scrollAction = SKAction.repeatForever(SKAction.moveBy(x: backgroundSpeed, y: 0, duration: 0.02))
     for x in bgImagesArray {
       x.run(scrollAction)
