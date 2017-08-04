@@ -15,7 +15,7 @@ class GameViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Preload images
+    // Preload images from SceneManager.swift
     SceneManager.sharedInstance.preloadAssets()
     self.startScene()
     

@@ -32,21 +32,24 @@ import GameplayKit
 
 class GameScene: SKScene {
   
-  let playableRect: CGRect
   
+  // When the scrolling bg image reaches this x-coordinat, it will be moved to the right side outside the screen
   let BG_X_RESET: CGFloat = -1030.0
-  var bgImages = [SKSpriteNode]()
-  var backgroundActions = [SKAction]()
-  var backgroundSpeed:CGFloat = -15.0
-  var action: SKAction!
   
-  var touchScreen: Bool = false
+  // The spritenodes (bg images) are stored in this array, this is used when we scroll the images
+  var bgImagesArray = [SKSpriteNode]()
+  
+  //var backgroundActions = [SKAction]()
+  
+  // This is the scrolling speed of the bg images.
+  var backgroundSpeed:CGFloat = -15.0
+  
+  // We use this in 'touchesBegan' to start scrolling the bg images
+  var scrollAction: SKAction!
+  
+  //var touchScreen: Bool = false
   
   override init(size: CGSize) {
-    let maxAspectRatio:CGFloat = 16.0/9.0
-    let playableHeight = size.width / maxAspectRatio
-    let playableMargin = (size.height-playableHeight)/2.0
-    playableRect = CGRect(x: 0, y: playableMargin, width: size.width, height: playableHeight)
     super.init(size: size)
   }
   
@@ -56,41 +59,26 @@ class GameScene: SKScene {
   
   override func didMove(to view: SKView) {
     
-    // Draw a red square around the playable area (gameArea)
-    debugDrawPlayableArea()
-    
     // Change 'numberOfBgPieces' to the number of bg image we want to scroll.
-    setupBackgroundPieces(numberOfBgPieces: 8, bgImage: "bgImage", spriteName: "bgImage", bgYPos: 400, bgZIndex: 10, bgArray: &bgImages, bgActionX: backgroundSpeed, gameArea: playableRect)
+    setupBackgroundPieces(numberOfBgPieces: 8, bgArray: &bgImagesArray)
   }
-  
-  func debugDrawPlayableArea() {
-    let shape = SKShapeNode()
-    let path = CGMutablePath()
-    path.addRect(playableRect)
-    shape.path = path
-    shape.strokeColor = SKColor.red
-    shape.lineWidth = 4.0
-    shape.zPosition = 100
-    addChild(shape)
-  }
-  
-  func setupBackgroundPieces(numberOfBgPieces: Int, bgImage: String, spriteName: String, bgYPos: CGFloat, bgZIndex: CGFloat, bgArray: inout [SKSpriteNode], bgActionX: CGFloat, gameArea: CGRect){
+
+  func setupBackgroundPieces(numberOfBgPieces: Int, bgArray: inout [SKSpriteNode]){
     
     for x in 1...numberOfBgPieces {
-      let bgImageName = "\(bgImage)\(x)"
+      let bgImageName = "bgImage\(x)"
       let bg = SKSpriteNode(imageNamed: bgImageName)
-      bg.name = spriteName
-      bg.position = CGPoint(x: gameArea.minX + (CGFloat(x-1) * bg.size.width), y: self.size.height / 2)
-      bg.zPosition = bgZIndex
+      bg.position = CGPoint(x: self.frame.minX + (CGFloat(x-1) * bg.size.width), y: self.size.height / 2)
+      bg.zPosition = 10
       bgArray.append(bg)
       self.addChild(bg)
     }
   }
   
-  // This is called from the update loop
+  // This function is called from the update loop
   // This moves the bg images to the right side outside the
-  // screen so that they will scroll again. The bg image is moved when it reaches 'spriteResetXPos'
-  func groundAndBgMovementPosition(piecesArray: [SKSpriteNode], spriteResetXPos: CGFloat){
+  // screen so that they will scroll again. The bg image is moved when it reaches 'spriteResetXPos' which is x -1030.0
+  func bgMovementPosition(piecesArray: [SKSpriteNode], spriteResetXPos: CGFloat){
     
     for x in (0..<piecesArray.count){
       
@@ -126,12 +114,12 @@ class GameScene: SKScene {
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     for t in touches { self.touchDown(atPoint: t.location(in: self)) }
-    // Start scrolling the background images when we tap screen
+    // Start scrolling the background images when we tap screen.
     // Each time we tap screen, the scroll speed increases (I don't know if this
-    // is the best way to increase the scroll speed).
-    action = SKAction.repeatForever(SKAction.moveBy(x: -15.0, y: 0, duration: 0.02))
-    for x in bgImages {
-      x.run(action)
+    // is the best way to increase the scroll speed but that is not relevant in this case).
+    scrollAction = SKAction.repeatForever(SKAction.moveBy(x: backgroundSpeed, y: 0, duration: 0.02))
+    for x in bgImagesArray {
+      x.run(scrollAction)
     }
   }
   
@@ -149,6 +137,6 @@ class GameScene: SKScene {
   
   override func update(_ currentTime: TimeInterval) {
     // Called before each frame is rendered
-    groundAndBgMovementPosition(piecesArray: bgImages, spriteResetXPos: BG_X_RESET)
+    bgMovementPosition(piecesArray: bgImagesArray, spriteResetXPos: BG_X_RESET)
   }
 }
